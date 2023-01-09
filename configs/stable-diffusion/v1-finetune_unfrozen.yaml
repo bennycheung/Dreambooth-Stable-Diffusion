@@ -106,15 +106,26 @@ data:
 lightning:
   modelcheckpoint:
     params:
-      every_n_train_steps: 500
+      every_n_train_steps: 500      
+      auto_insert_metric_name: false
+      filename: "epoch{epoch:03d}-step{step:04d}-loss{val/loss_simple_ema:.4f}"
+      save_top_k: 5 # saves the n number of checkpoints based on least loss
+      save_last: true # can set to true if you still want the last one      
   callbacks:
+    metrics_over_trainsteps_checkpoint:
+      target: pytorch_lightning.callbacks.ModelCheckpoint
+      params:
+        every_n_train_steps: 500
+        save_weights_only: True
     image_logger:
       target: main.ImageLogger
       params:
-        batch_frequency: 500
-        max_images: 8
+        batch_frequency: 100
+        max_images: 4 
         increase_log_steps: False
 
   trainer:
     benchmark: True
     max_steps: 3000
+    val_check_interval: 500 # loss validation check every n steps 
+    log_every_n_steps: 500 # log every n steps
